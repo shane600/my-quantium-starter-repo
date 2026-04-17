@@ -1,12 +1,15 @@
 import pandas as pd
 import glob
 
+# grab all three csv files from the data folder
 files = glob.glob("data/daily_sales_data_*.csv")
 dfs = [pd.read_csv(f) for f in files]
 df = pd.concat(dfs, ignore_index=True)
 
+# only care about pink morsels, filter everthing else out
 df = df[df["product"] == "pink morsel"].copy()
 
+# strip the dollar sign then work out total sales per row
 df["price"] = df["price"].str.replace("$", "", regex=False).astype(float)
 df["sales"] = df["quantity"] * df["price"]
 

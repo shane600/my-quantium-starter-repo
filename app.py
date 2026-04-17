@@ -2,6 +2,7 @@ import pandas as pd
 from dash import Dash, dcc, html, Input, Output, callback
 import plotly.graph_objects as go
 
+# load the cleaned output and sort by date
 df = pd.read_csv("data/output.csv", parse_dates=["date"])
 df = df.sort_values("date")
 
@@ -9,6 +10,8 @@ daily = df.groupby(["date", "region"])["sales"].sum().reset_index()
 
 regions = ["north", "south", "east", "west"]
 colours = {"north": "#4361ee", "south": "#f72585", "east": "#4cc9f0", "west": "#7209b7"}
+
+# plotly needs a unix millisecond timestamp for the vline on a date axis
 price_increase_ts = pd.Timestamp("2021-01-15").timestamp() * 1000
 
 app = Dash(__name__)
@@ -85,6 +88,7 @@ app.layout = html.Div(
 )
 
 
+# redraws the chart whenever the region filter changes
 @callback(Output("sales-chart", "figure"), Input("region-filter", "value"))
 def update_chart(selected_region):
     fig = go.Figure()
